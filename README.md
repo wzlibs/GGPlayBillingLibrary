@@ -22,7 +22,7 @@ Step 2. Add the dependency
 
 Step 3. Listener
 
-billingRepository.addBillingListener(object : BillingListener{
+	billingRepository.addBillingListener(object : BillingListener{
             override fun onListProductDetails(listProductDetails: List<ProductInfo>) {
                 super.onListProductDetails(listProductDetails)
             }
