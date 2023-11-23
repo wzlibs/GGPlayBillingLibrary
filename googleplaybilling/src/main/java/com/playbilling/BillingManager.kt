@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class BillingRepository constructor(
+class BillingManager constructor(
     private val context: Context,
     private val subs: List<String>,
     private val inApps: List<String>,
@@ -28,7 +28,7 @@ class BillingRepository constructor(
     fun addBillingListener(billingListener: BillingListener) {
         billingListeners.add(billingListener)
 
-        if (queryPurchaseState == QueryPurchaseState.LOAD_FAILED){
+        if (queryPurchaseState == QueryPurchaseState.LOAD_FAILED) {
             billingListener.onBillingSetupFailed()
         }
 
@@ -109,12 +109,15 @@ class BillingRepository constructor(
                     billingListeners.forEach { it.onBillingSuccess(billingProduct) }
                     billingResponseOk(purchases)
                 }
+
                 BillingClient.BillingResponseCode.USER_CANCELED -> {
                     billingListeners.forEach { it.onUserCancel() }
                 }
+
                 BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> {
                     billingListeners.forEach { it.onItemAlreadyOwned() }
                 }
+
                 BillingClient.BillingResponseCode.ERROR -> {
                     billingListeners.forEach { it.onBillingError() }
                 }
@@ -214,7 +217,8 @@ class BillingRepository constructor(
         productDetails: ProductInfo
     ) {
         billingProduct = productDetails
-        val productDetailsParams = BillingFlowParams.ProductDetailsParams.newBuilder().setProductDetails(productDetails.productDetails)
+        val productDetailsParams = BillingFlowParams.ProductDetailsParams.newBuilder()
+            .setProductDetails(productDetails.productDetails)
         if (productDetails.getProductType() == SUBS) {
             val offerTokens = productDetails.getOfferToken()
             if (offerTokens == null) {
